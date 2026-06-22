@@ -567,19 +567,25 @@
    Content is fully visible by default. Only when JS adds
    .aih-animations-ready to <body> do we arm the reveal.
    =================================================================== */
+/* Content is ALWAYS visible by default. The entrance effect is additive:
+   when JS adds .is-in, a keyframe plays from hidden to visible and ENDS
+   visible. If JS never runs (or the observer never fires), nothing is
+   hidden, so modules can never end up blank. */
 .aih-reveal { opacity: 1; transform: none; }
-body.aih-animations-ready .aih-reveal {
-  opacity: 0; transform: translateY(22px);
-  transition: opacity .6s ease, transform .6s ease;
+@keyframes aih-fade-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: none; }
 }
-body.aih-animations-ready .aih-reveal.is-in { opacity: 1; transform: none; }
+body.aih-animations-ready .aih-reveal.is-in {
+  animation: aih-fade-in .6s ease both;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .aih-lp *, .aih-lp *::before, .aih-lp *::after {
     transition-duration: 0.001ms !important;
     animation-duration: 0.001ms !important;
   }
-  body.aih-animations-ready .aih-reveal { opacity: 1 !important; transform: none !important; }
+  body.aih-animations-ready .aih-reveal.is-in { animation: none; }
 }
 
 /* ===================================================================
