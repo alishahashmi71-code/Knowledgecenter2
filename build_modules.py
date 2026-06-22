@@ -270,6 +270,8 @@ VIDEOS = [
      'https://www.youtube.com/@MilwaukeeTool/videos'),
 ]
 
+LOGO_URL = ("https://6847819.fs1.hubspotusercontent-na1.net/hubfs/6847819/"
+            "Applied%20Logo/applied-industrial-technologies-squarelogo.png?width=860&t=1592397174461")
 CONTACT_URL = "https://www.applied.com/contact-us"   # FLAG: verify exact Applied contact URL
 RESOURCES_URL = "https://www.applied.com/"            # FLAG: placeholder destination for pending resources
 
@@ -321,12 +323,7 @@ def write(name, content):
 # MODULE 01 — HERO
 # =========================================================================
 def module_01():
-    return """<!-- module-01-hero.html | HubSpot: Rich Text / Custom HTML module
-     LOGO: the right-side mark below is a self-contained CSS/SVG wordmark so it
-     renders with no external asset. To use the official artwork instead, replace
-     the whole <div class="aih-hero-logo"> ... </div> with:
-       <img class="aih-hero-logo-img" src="YOUR-APPLIED-WHITE-LOGO.svg"
-            alt="Applied Industrial Technologies" width="220" loading="eager"> -->
+    return """<!-- module-01-hero.html | HubSpot: Rich Text / Custom HTML module -->
 <div class="aih-lp">
   <section class="aih-hero" aria-labelledby="aih-hero-title">
     <div class="aih-container aih-hero-grid">
@@ -340,19 +337,13 @@ def module_01():
           <a class="aih-btn aih-btn-ghost" href="%s" rel="noopener" target="_blank">Talk to an Applied specialist</a>
         </div>
       </div>
-      <div class="aih-hero-logo" role="img" aria-label="Applied Industrial Technologies">
-        <svg class="aih-hero-logo-mark" viewBox="0 0 64 64" width="62" height="62" aria-hidden="true">
-          <path fill="#ffffff" d="M32 5 L60 59 L43 59 L32 35 L21 59 L4 59 Z"></path>
-        </svg>
-        <span class="aih-hero-logo-text">
-          <span class="aih-hero-logo-name">APPLIED</span>
-          <span class="aih-hero-logo-sub">Industrial Technologies&reg;</span>
-        </span>
+      <div class="aih-hero-logo">
+        <img class="aih-hero-logo-img" src="%s" alt="Applied Industrial Technologies" loading="eager" width="180" height="180">
       </div>
     </div>
   </section>
 </div>
-""" % CONTACT_URL
+""" % (CONTACT_URL, esc(LOGO_URL))
 
 # =========================================================================
 # MODULE 02 — FEATURED SUPPLIERS STRIP
