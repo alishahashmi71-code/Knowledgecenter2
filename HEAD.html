@@ -218,6 +218,21 @@
   pointer-events: none;
 }
 .aih-hero .aih-container { position: relative; z-index: 2; }
+.aih-hero-grid {
+  display: flex; align-items: center; justify-content: space-between; gap: 2.5rem;
+}
+.aih-hero-content { flex: 1 1 auto; max-width: 760px; }
+.aih-hero-logo { flex: 0 0 auto; display: flex; align-items: center; gap: 0.9rem; }
+.aih-hero-logo-mark { display: block; flex: 0 0 auto; }
+.aih-hero-logo-img { display: block; height: auto; }
+.aih-hero-logo-text { display: flex; flex-direction: column; line-height: 1; }
+.aih-hero-logo-name {
+  font-size: 2rem; font-weight: 700; letter-spacing: 0.02em; color: #fff;
+}
+.aih-hero-logo-sub {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.82); margin-top: 0.3rem; white-space: nowrap;
+}
 .aih-hero h1 {
   color: #fff;
   font-size: clamp(2.2rem, 1.2rem + 3.6vw, 3.6rem);
@@ -581,6 +596,9 @@ body.aih-animations-ready .aih-reveal.is-in { opacity: 1; transform: none; }
 @media (max-width: 768px) {
   .aih-section { padding: 3rem 0; }
   .aih-hero { padding: 4rem 0 3.5rem; }
+  .aih-hero-grid { flex-direction: column; align-items: flex-start; gap: 1.75rem; }
+  .aih-hero-logo { order: -1; }
+  .aih-hero-logo-name { font-size: 1.7rem; }
 
   /* sidebar moves above results, becomes a collapsible panel */
   .aih-library-grid { grid-template-columns: 1fr; }

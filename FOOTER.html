@@ -28,8 +28,12 @@
     var items = document.querySelectorAll(".aih-lp .aih-reveal");
     if (!items.length) return;
 
-    if (prefersReduced || !("IntersectionObserver" in window)) {
+    function revealAll() {
       items.forEach(function (el) { el.classList.add("is-in"); });
+    }
+
+    if (prefersReduced || !("IntersectionObserver" in window)) {
+      revealAll();
       return;
     }
     var io = new IntersectionObserver(function (entries) {
@@ -39,8 +43,12 @@
           io.unobserve(e.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    }, { threshold: 0.01, rootMargin: "0px 0px -8% 0px" });
     items.forEach(function (el) { io.observe(el); });
+
+    /* Safety net: never leave content hidden if the observer does not
+       fire (some embedded/CMS contexts throttle IntersectionObserver). */
+    window.setTimeout(revealAll, 1400);
   }
 
   /* ----------------------------------------------------------------

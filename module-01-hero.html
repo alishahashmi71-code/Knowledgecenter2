@@ -1,28 +1,30 @@
-<!-- module-01-hero.html | HubSpot: Rich Text / Custom HTML module -->
+<!-- module-01-hero.html | HubSpot: Rich Text / Custom HTML module
+     LOGO: the right-side mark below is a self-contained CSS/SVG wordmark so it
+     renders with no external asset. To use the official artwork instead, replace
+     the whole <div class="aih-hero-logo"> ... </div> with:
+       <img class="aih-hero-logo-img" src="YOUR-APPLIED-WHITE-LOGO.svg"
+            alt="Applied Industrial Technologies" width="220" loading="eager"> -->
 <div class="aih-lp">
   <section class="aih-hero" aria-labelledby="aih-hero-title">
-    <div class="aih-container">
-      <h1 id="aih-hero-title" style="color:#ffffff;">Knowledge &amp; Solutions Center</h1>
-      <p class="aih-hero-sub">Insights, guides, and expert solutions from Applied&reg; and the
-        suppliers we trust, gathered to help your operations run safer, smarter, and more
-        efficiently.</p>
-      <div class="aih-hero-actions">
-        <a class="aih-btn aih-btn-white" href="#aih-library" data-aih-scroll>Browse the knowledge library</a>
-        <a class="aih-btn aih-btn-ghost" href="https://www.applied.com/contact-us" rel="noopener" target="_blank">Talk to an Applied specialist</a>
+    <div class="aih-container aih-hero-grid">
+      <div class="aih-hero-content">
+        <h1 id="aih-hero-title" style="color:#ffffff;">Knowledge &amp; Solutions Center</h1>
+        <p class="aih-hero-sub">Insights, guides, and expert solutions from Applied&reg; and the
+          suppliers we trust, gathered to help your operations run safer, smarter, and more
+          efficiently.</p>
+        <div class="aih-hero-actions">
+          <a class="aih-btn aih-btn-white" href="#aih-library" data-aih-scroll>Browse the knowledge library</a>
+          <a class="aih-btn aih-btn-ghost" href="https://www.applied.com/contact-us" rel="noopener" target="_blank">Talk to an Applied specialist</a>
+        </div>
       </div>
-      <div class="aih-hero-stats">
-        <div class="aih-hero-stat">
-          <div class="aih-stat-num">99+</div>
-          <div class="aih-stat-label">Articles, guides &amp; videos</div>
-        </div>
-        <div class="aih-hero-stat">
-          <div class="aih-stat-num">17</div>
-          <div class="aih-stat-label">Featured suppliers</div>
-        </div>
-        <div class="aih-hero-stat">
-          <div class="aih-stat-num">9</div>
-          <div class="aih-stat-label">Industries covered</div>
-        </div>
+      <div class="aih-hero-logo" role="img" aria-label="Applied Industrial Technologies">
+        <svg class="aih-hero-logo-mark" viewBox="0 0 64 64" width="62" height="62" aria-hidden="true">
+          <path fill="#ffffff" d="M32 5 L60 59 L43 59 L32 35 L21 59 L4 59 Z"></path>
+        </svg>
+        <span class="aih-hero-logo-text">
+          <span class="aih-hero-logo-name">APPLIED</span>
+          <span class="aih-hero-logo-sub">Industrial Technologies&reg;</span>
+        </span>
       </div>
     </div>
   </section>
