@@ -4,10 +4,30 @@
 Generate the seven Knowledge & Solutions Center module files from the
 content in the assigned spreadsheet. Run:  python3 build_modules.py
 Outputs module-01..07 HTML files (pure markup, no <style>/<script>).
+
+Article preview images are optional: if a file named 'article-images.csv'
+exists next to this script with columns including 'Article URL' and
+'Image URL', any row with both filled will render that image in the card.
+Articles without an image keep the grey placeholder.
 """
-import html, os
+import html, os, csv
 
 OUT = os.path.dirname(os.path.abspath(__file__))
+
+def load_images():
+    """url -> hosted image url, from article-images.csv if present."""
+    path = os.path.join(OUT, 'article-images.csv')
+    images = {}
+    if os.path.exists(path):
+        with open(path, newline='', encoding='utf-8-sig') as f:
+            for row in csv.DictReader(f):
+                u = (row.get('Article URL') or '').strip()
+                img = (row.get('Image URL') or '').strip()
+                if u and img:
+                    images[u] = img
+    return images
+
+IMAGES = load_images()
 
 # ----- shared SVG snippets ------------------------------------------------
 ARROW = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
@@ -287,16 +307,24 @@ def excerpt(supplier_slug, kind):
     return ("Practical insight from %s you can put to work on the floor. "
             "Read the full article for the details." % name)
 
+def media_block(supplier_slug, title, url, indent="          "):
+    """Render a real <img> if mapped, else the grey placeholder."""
+    img = IMAGES.get(url)
+    if img:
+        return ('%s<img src="%s" alt="%s" loading="lazy" width="640" height="400">\n'
+                % (indent, esc(img), esc(title)))
+    return ('%s<div class="aih-ph" role="img" aria-label="%s preview image, pending">%s</div>\n'
+            % (indent, esc(SUP_LABEL[supplier_slug]), esc(SUP_LABEL[supplier_slug])))
+
 def card(supplier_slug, title, inds, url, kind, idx):
     ind_attr = " ".join(inds)
     primary_ind = IND[inds[0]]
     hidden = " is-hidden" if idx >= 3 else ""
-    eager = "lazy"
     kind_word = "Read the story" if kind == 'case-study' else "Read the article"
     return (
         '      <article class="aih-card%s" data-supplier="%s" data-industry="%s" data-type="%s">\n'
         '        <div class="aih-card-media">\n'
-        '          <div class="aih-ph" role="img" aria-label="%s article image, pending">%s</div>\n'
+        '%s'
         '        </div>\n'
         '        <div class="aih-card-body">\n'
         '          <span class="aih-tag">%s</span>\n'
@@ -308,8 +336,9 @@ def card(supplier_slug, title, inds, url, kind, idx):
         '          </div>\n'
         '        </div>\n'
         '      </article>\n'
-    ) % (hidden, supplier_slug, ind_attr, kind, esc(SUP_LABEL[supplier_slug]),
-         esc(SUP_LABEL[supplier_slug]), esc(primary_ind), esc(title),
+    ) % (hidden, supplier_slug, ind_attr, kind,
+         media_block(supplier_slug, title, url),
+         esc(primary_ind), esc(title),
          esc(SUP_LABEL[supplier_slug]), esc(excerpt(supplier_slug, kind)),
          esc(url), kind_word, ARROW)
 
@@ -387,10 +416,17 @@ def module_03():
     dots = ""
     for i, (sup, title, blurb, url, tag) in enumerate(SPOTLIGHT):
         active = " is-active" if i == 0 else ""
+        spot_img = IMAGES.get(url)
+        if spot_img:
+            spot_media = ('            <img src="%s" alt="%s" loading="lazy">\n'
+                          % (esc(spot_img), esc(title)))
+        else:
+            spot_media = ('            <div class="aih-ph" role="img" aria-label="%s spotlight image, pending"></div>\n'
+                          % esc(SUP_LABEL[sup]))
         slides += (
             '        <div class="aih-spotlight-slide%s">\n'
             '          <div class="aih-spotlight-media">\n'
-            '            <div class="aih-ph" role="img" aria-label="%s spotlight image, pending"></div>\n'
+            '%s'
             '          </div>\n'
             '          <div class="aih-spotlight-body">\n'
             '            <span class="aih-tag">%s</span>\n'
@@ -399,7 +435,7 @@ def module_03():
             '            <div><a class="aih-btn aih-btn-primary" href="%s" rel="noopener" target="_blank">Read the article</a></div>\n'
             '          </div>\n'
             '        </div>\n'
-        ) % (active, esc(SUP_LABEL[sup]), esc(tag), esc(title), esc(blurb), esc(url))
+        ) % (active, spot_media, esc(tag), esc(title), esc(blurb), esc(url))
         sel = "true" if i == 0 else "false"
         dots += ('        <button class="aih-spotlight-dot" type="button" aria-selected="%s" '
                  'aria-label="Show featured item %d"></button>\n' % (sel, i + 1))
@@ -669,7 +705,23 @@ def module_07():
 """ % CONTACT_URL
 
 # =========================================================================
+def write_manifest():
+    """Emit the article->image mapping template (won't clobber a filled one)."""
+    path = os.path.join(OUT, 'article-images.csv')
+    if os.path.exists(path):
+        print("article-images.csv already exists, leaving it as-is")
+        return
+    with open(path, 'w', newline='', encoding='utf-8-sig') as f:
+        w = csv.writer(f)
+        w.writerow(['Section', 'Supplier', 'Title', 'Article URL', 'Image URL'])
+        for (s, t, inds, u) in SUCCESS:
+            w.writerow(['Customer Success Stories', SUP_LABEL[s], t, u, ''])
+        for (s, t, inds, u) in FEATURED:
+            w.writerow(['Featured Articles', SUP_LABEL[s], t, u, ''])
+    print("wrote article-images.csv template")
+
 if __name__ == "__main__":
+    write_manifest()
     write("module-01-hero.html", module_01())
     write("module-02-suppliers.html", module_02())
     write("module-03-spotlight.html", module_03())
