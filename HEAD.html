@@ -204,17 +204,15 @@
    =================================================================== */
 .aih-hero {
   position: relative;
-  background: var(--aih-dark-gradient);
+  background: #201c52;        /* matches the Applied logo background blue */
   color: #fff;
   padding: 5.5rem 0 5rem;
   overflow: hidden;
 }
-.aih-hero::after {            /* subtle mechanical texture wash, brand-safe */
+.aih-hero::after {            /* subtle depth wash, keeps logo area clean */
   content: "";
   position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 82% 18%, rgba(0,123,133,0.28), transparent 42%),
-    radial-gradient(circle at 8% 92%, rgba(0,123,133,0.16), transparent 46%);
+  background: radial-gradient(circle at 10% 95%, rgba(0,123,133,0.16), transparent 48%);
   pointer-events: none;
 }
 .aih-hero .aih-container { position: relative; z-index: 2; }
