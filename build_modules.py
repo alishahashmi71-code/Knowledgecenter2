@@ -10,7 +10,7 @@ exists next to this script with columns including 'Article URL' and
 'Image URL', any row with both filled will render that image in the card.
 Articles without an image keep the grey placeholder.
 """
-import html, os, csv
+import html, os, csv, re
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 
@@ -609,8 +609,26 @@ def module_04():
 # MODULE 05 — VIDEO LIBRARY
 # =========================================================================
 def module_05():
-    cards = ""
+    vid_cards = ""
+    pod_cards = ""
     for tag, title, ytid, url in VIDEOS:
+        if tag == "Podcast":
+            m = re.search(r'/video/(\d+)', url)
+            tk = m.group(1) if m else ''
+            pod_cards += (
+                '      <div class="aih-podcast-card">\n'
+                '        <div class="aih-podcast-media">\n'
+                '          <iframe class="aih-podcast-frame" src="https://www.tiktok.com/player/v1/%s" '
+                'title="%s" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" '
+                'allowfullscreen loading="lazy"></iframe>\n'
+                '        </div>\n'
+                '        <div class="aih-video-body">\n'
+                '          <span class="aih-tag">Podcast</span>\n'
+                '          <h3>%s</h3>\n'
+                '        </div>\n'
+                '      </div>\n'
+            ) % (tk, esc(title), esc(title))
+            continue
         if ytid:
             thumb = "https://img.youtube.com/vi/%s/hqdefault.jpg" % ytid
             facade = (
@@ -621,16 +639,15 @@ def module_05():
                 '        </button>\n'
             ) % (ytid, esc(title), esc(title), thumb, esc(tag), PLAY)
         else:
-            # no embeddable id (channel link / TikTok podcast) -> link out
-            verb = "Listen to podcast" if tag == "Podcast" else "Watch on YouTube"
+            # no embeddable id (channel link) -> link out
             facade = (
                 '        <a class="aih-video-facade" href="%s" rel="noopener" target="_blank" '
-                'aria-label="%s: %s">\n'
+                'aria-label="Watch on YouTube: %s">\n'
                 '          <div class="aih-ph" role="img" aria-label="%s thumbnail, pending"></div>\n'
                 '          <span class="aih-video-play">%s</span>\n'
                 '        </a>\n'
-            ) % (esc(url), verb, esc(title), esc(tag), PLAY)
-        cards += (
+            ) % (esc(url), esc(title), esc(tag), PLAY)
+        vid_cards += (
             '      <div class="aih-video-card">\n'
             '%s'
             '        <div class="aih-video-body">\n'
@@ -639,9 +656,21 @@ def module_05():
             '        </div>\n'
             '      </div>\n'
         ) % (facade, esc(tag), esc(title))
-    return """<!-- module-05-videos.html | HubSpot: Rich Text / Custom HTML module
-     NOTE: contains click-to-load YouTube iframes injected by FOOTER JS.
-     If your HubSpot Rich Text strips data- attributes, paste as a CUSTOM HTML module. -->
+
+    podcasts_section = ""
+    if pod_cards:
+        podcasts_section = (
+            '      <div class="aih-shead" style="margin-top:3rem;">\n'
+            '        <h2>Podcasts</h2>\n'
+            '      </div>\n'
+            '      <div class="aih-podcast-grid aih-reveal">\n'
+            '%s      </div>\n'
+        ) % pod_cards
+
+    return """<!-- module-05-videos.html | HubSpot: CUSTOM HTML module
+     NOTE: contains click-to-load YouTube facades (FOOTER JS) and inline
+     TikTok player iframes. Paste as a Custom HTML module so data- attributes
+     and <iframe> tags are preserved. -->
 <div class="aih-lp">
   <section class="aih-section aih-bg-grey50" aria-labelledby="aih-video-h">
     <div class="aih-container">
@@ -651,10 +680,9 @@ def module_05():
       </div>
       <div class="aih-video-grid aih-reveal">
 %s      </div>
-    </div>
+%s    </div>
   </section>
-</div>
-""" % cards
+</div>""" % (vid_cards, podcasts_section)
 
 # =========================================================================
 # MODULE 06 — PRODUCT & INDUSTRY RESOURCES (placeholders, flagged pending)
