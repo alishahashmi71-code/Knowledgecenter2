@@ -320,8 +320,9 @@ VIDEOS = [
      'https://www.tiktok.com/@appliedindustrial/video/7652342568453229855'),
 ]
 
+# hero background watermark (the Applied "A" mark)
 LOGO_URL = ("https://6847819.fs1.hubspotusercontent-na1.net/hubfs/6847819/"
-            "Applied%20Logo/applied-industrial-technologies-squarelogo.png?width=860&t=1592397174461")
+            "Knowledge%20Center/Untitled%20design%20-%202026-06-24T133539.761.png?width=860&t=1782323019012")
 CONTACT_URL = "https://www.applied.com/contact"   # Applied contact page
 RESOURCES_URL = "https://www.applied.com/"            # FLAG: placeholder destination for pending resources
 
