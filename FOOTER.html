@@ -154,7 +154,6 @@
     var blocks = Array.prototype.slice.call(library.querySelectorAll(".aih-content-block"));
     var countEl = library.querySelector("[data-result-count]");
     var emptyEl = library.querySelector(".aih-results-empty");
-    var scroll = library.querySelector(".aih-results-scroll");
 
     function getChecked(name) {
       var set = [];
@@ -173,27 +172,38 @@
       return indOK && supOK && typeOK;
     }
 
-    function apply(resetScroll) {
+    var COLLAPSED = 3; /* cards shown per section before "Show more" */
+
+    function apply() {
       var industries = getChecked("industry");
       var suppliers = getChecked("supplier");
       var types = getChecked("type");
       var grandTotal = 0;
 
       blocks.forEach(function (block) {
+        var expanded = block.classList.contains("is-expanded");
         var cards = Array.prototype.slice.call(block.querySelectorAll(".aih-card"));
         var matched = 0;
         cards.forEach(function (c) {
           var ok = cardMatches(c, industries, suppliers, types);
-          c.classList.toggle("is-hidden", !ok);
+          var show = ok && (expanded || matched < COLLAPSED);
+          c.classList.toggle("is-hidden", !show);
           if (ok) matched++;
         });
         grandTotal += matched;
         block.style.display = matched ? "" : "none";
+
+        var wrap = block.querySelector(".aih-showmore-wrap");
+        var btn = block.querySelector(".aih-showmore");
+        if (wrap) wrap.hidden = matched <= COLLAPSED;   /* no button if it all fits */
+        if (btn) {
+          btn.textContent = expanded ? "Show less" : "Show more";
+          btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+        }
       });
 
       if (countEl) countEl.textContent = grandTotal;
       if (emptyEl) emptyEl.classList.toggle("is-visible", grandTotal === 0);
-      if (resetScroll && scroll) scroll.scrollTop = 0;
     }
 
     /* "All Industries" behaves as a master toggle */
@@ -207,20 +217,36 @@
           var allBox = library.querySelector('input[data-filter="industry"][value="all"]');
           if (allBox) allBox.checked = false;
         }
-        apply(true);
+        apply();
       });
     });
 
     /* supplier + type checkboxes re-filter live */
     library.querySelectorAll('input[data-filter="supplier"], input[data-filter="type"]').forEach(function (input) {
-      input.addEventListener("change", function () { apply(true); });
+      input.addEventListener("change", apply);
+    });
+
+    /* per-section Show more / Show less -> expand block into a fixed-height scroll panel */
+    library.querySelectorAll(".aih-showmore").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var block = btn.closest(".aih-content-block");
+        if (!block) return;
+        var nowExpanded = block.classList.toggle("is-expanded");
+        apply();
+        var grid = block.querySelector(".aih-card-grid");
+        if (nowExpanded) {
+          if (grid) grid.scrollTop = 0;
+        } else {
+          block.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "nearest" });
+        }
+      });
     });
 
     /* Apply button (mainly for mobile, also re-applies) */
     var applyBtn = library.querySelector(".aih-apply");
     if (applyBtn) applyBtn.addEventListener("click", function (e) {
       e.preventDefault();
-      apply(true);
+      apply();
       var results = library.querySelector(".aih-results");
       if (results && window.innerWidth <= 768) {
         results.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
@@ -236,10 +262,10 @@
       if (allBox) allBox.checked = true;
       var search = library.querySelector(".aih-supplier-search");
       if (search) { search.value = ""; search.dispatchEvent(new Event("input")); }
-      apply(true);
+      apply();
     });
 
-    apply(false); /* initial paint */
+    apply(); /* initial paint */
   }
 
   /* ----------------------------------------------------------------

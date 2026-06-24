@@ -574,21 +574,25 @@ def module_04():
 
           <div class="aih-results-empty">No results match those filters. Try clearing a filter or two.</div>
 
-          <div class="aih-results-scroll">
-            <div class="aih-content-block" data-block="success">
-              <div class="aih-shead">
-                <h2>Customer success stories</h2>
-              </div>
-              <div class="aih-card-grid">
-%s              </div>
+          <div class="aih-content-block" data-block="success">
+            <div class="aih-shead">
+              <h2>Customer success stories</h2>
             </div>
+            <div class="aih-card-grid">
+%s            </div>
+            <div class="aih-showmore-wrap" hidden>
+              <button class="aih-btn aih-btn-secondary aih-showmore" type="button" aria-expanded="false">Show more</button>
+            </div>
+          </div>
 
-            <div class="aih-content-block" data-block="featured">
-              <div class="aih-shead">
-                <h2>Featured articles</h2>
-              </div>
-              <div class="aih-card-grid">
-%s              </div>
+          <div class="aih-content-block" data-block="featured">
+            <div class="aih-shead">
+              <h2>Featured articles</h2>
+            </div>
+            <div class="aih-card-grid">
+%s            </div>
+            <div class="aih-showmore-wrap" hidden>
+              <button class="aih-btn aih-btn-secondary aih-showmore" type="button" aria-expanded="false">Show more</button>
             </div>
           </div>
 
