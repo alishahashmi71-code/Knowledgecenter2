@@ -362,6 +362,47 @@
 /* ===================================================================
    9. KNOWLEDGE LIBRARY  (module 04): sidebar + grids
    =================================================================== */
+/* section header banner */
+.aih-libhead {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
+  border: 1px solid var(--aih-grey-200);
+  border-radius: var(--aih-radius-lg);
+  padding: 3rem 2.75rem;
+  margin-bottom: 2.5rem;
+  overflow: hidden;
+}
+.aih-libhead-body {
+  position: relative; z-index: 2;
+  border-left: 6px solid var(--aih-primary);
+  padding-left: 1.6rem;
+  max-width: 64ch;
+}
+.aih-libhead .aih-libhead-title {
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 3.1rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  line-height: 1.05;
+  color: var(--aih-navy);
+}
+.aih-libhead-rule {
+  display: block; width: 92px; height: 4px; border-radius: 2px;
+  background: var(--aih-primary); margin: 1.1rem 0 1.25rem;
+}
+.aih-libhead .aih-libhead-sub {
+  font-size: clamp(1.02rem, 0.95rem + 0.4vw, 1.22rem);
+  line-height: 1.55; color: var(--aih-grey-700); max-width: 58ch;
+}
+.aih-libhead-dots {
+  position: absolute; right: 0; bottom: 0; z-index: 1; pointer-events: none;
+  width: 48%; height: 88%; opacity: 0.75;
+  background-image: radial-gradient(rgba(0,123,133,0.5) 2px, transparent 2.4px);
+  background-size: 18px 18px;
+  -webkit-mask-image: linear-gradient(315deg, #000 0%, rgba(0,0,0,0.2) 42%, transparent 68%);
+  mask-image: linear-gradient(315deg, #000 0%, rgba(0,0,0,0.2) 42%, transparent 68%);
+}
+
 .aih-library-grid {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -638,6 +679,10 @@ body.aih-animations-ready .aih-reveal.is-in {
   .aih-hero-grid { flex-direction: column; align-items: flex-start; gap: 1.75rem; }
   .aih-hero-watermark { display: none; }
   .aih-hero-dots { width: 96px; height: 96px; opacity: 0.4; }
+
+  .aih-libhead { padding: 2rem 1.5rem; }
+  .aih-libhead-body { padding-left: 1.1rem; }
+  .aih-libhead-dots { opacity: 0.4; width: 60%; }
 
   /* sidebar moves above results, becomes a collapsible panel */
   .aih-library-grid { grid-template-columns: 1fr; }
