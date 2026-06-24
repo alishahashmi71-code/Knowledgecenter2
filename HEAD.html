@@ -362,14 +362,12 @@
 /* ===================================================================
    9. KNOWLEDGE LIBRARY  (module 04): sidebar + grids
    =================================================================== */
-/* section header banner */
+/* section header (transparent, blends with the surrounding modules) */
 .aih-libhead {
   position: relative;
-  background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
-  border: 1px solid var(--aih-grey-200);
-  border-radius: var(--aih-radius-lg);
-  padding: 3rem 2.75rem;
-  margin-bottom: 2.5rem;
+  background: transparent;
+  padding: 0.5rem 0 2.25rem;
+  margin-bottom: 1.25rem;
   overflow: hidden;
 }
 .aih-libhead-body {
@@ -680,9 +678,9 @@ body.aih-animations-ready .aih-reveal.is-in {
   .aih-hero-watermark { display: none; }
   .aih-hero-dots { width: 96px; height: 96px; opacity: 0.4; }
 
-  .aih-libhead { padding: 2rem 1.5rem; }
+  .aih-libhead { padding: 0.25rem 0 1.75rem; }
   .aih-libhead-body { padding-left: 1.1rem; }
-  .aih-libhead-dots { opacity: 0.4; width: 60%; }
+  .aih-libhead-dots { opacity: 0.35; width: 55%; }
 
   /* sidebar moves above results, becomes a collapsible panel */
   .aih-library-grid { grid-template-columns: 1fr; }
