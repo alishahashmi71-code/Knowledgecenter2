@@ -145,16 +145,16 @@
   }
 
   /* ----------------------------------------------------------------
-     5. KNOWLEDGE LIBRARY: live filtering + per-block Load More
+     5. KNOWLEDGE LIBRARY: live filtering inside a fixed scroll pane
      ---------------------------------------------------------------- */
   function initLibrary() {
     var library = document.querySelector(".aih-lp #aih-library");
     if (!library) return;
 
-    var STEP = 3;
     var blocks = Array.prototype.slice.call(library.querySelectorAll(".aih-content-block"));
     var countEl = library.querySelector("[data-result-count]");
     var emptyEl = library.querySelector(".aih-results-empty");
+    var scroll = library.querySelector(".aih-results-scroll");
 
     function getChecked(name) {
       var set = [];
@@ -173,32 +173,27 @@
       return indOK && supOK && typeOK;
     }
 
-    function apply() {
+    function apply(resetScroll) {
       var industries = getChecked("industry");
       var suppliers = getChecked("supplier");
       var types = getChecked("type");
       var grandTotal = 0;
 
       blocks.forEach(function (block) {
-        var shown = parseInt(block.getAttribute("data-shown"), 10) || STEP;
         var cards = Array.prototype.slice.call(block.querySelectorAll(".aih-card"));
-        var matched = cards.filter(function (c) {
-          return cardMatches(c, industries, suppliers, types);
+        var matched = 0;
+        cards.forEach(function (c) {
+          var ok = cardMatches(c, industries, suppliers, types);
+          c.classList.toggle("is-hidden", !ok);
+          if (ok) matched++;
         });
-        grandTotal += matched.length;
-
-        cards.forEach(function (c) { c.classList.add("is-hidden"); });
-        matched.slice(0, shown).forEach(function (c) { c.classList.remove("is-hidden"); });
-
-        /* hide a block with zero matches; show otherwise */
-        block.style.display = matched.length ? "" : "none";
-
-        var lm = block.querySelector(".aih-loadmore-wrap");
-        if (lm) lm.hidden = matched.length <= shown;
+        grandTotal += matched;
+        block.style.display = matched ? "" : "none";
       });
 
       if (countEl) countEl.textContent = grandTotal;
       if (emptyEl) emptyEl.classList.toggle("is-visible", grandTotal === 0);
+      if (resetScroll && scroll) scroll.scrollTop = 0;
     }
 
     /* "All Industries" behaves as a master toggle */
@@ -212,36 +207,20 @@
           var allBox = library.querySelector('input[data-filter="industry"][value="all"]');
           if (allBox) allBox.checked = false;
         }
-        resetShownAndApply();
+        apply(true);
       });
     });
 
     /* supplier + type checkboxes re-filter live */
     library.querySelectorAll('input[data-filter="supplier"], input[data-filter="type"]').forEach(function (input) {
-      input.addEventListener("change", resetShownAndApply);
-    });
-
-    function resetShownAndApply() {
-      blocks.forEach(function (b) { b.setAttribute("data-shown", String(STEP)); });
-      apply();
-    }
-
-    /* Load more per block */
-    library.querySelectorAll(".aih-loadmore").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var block = btn.closest(".aih-content-block");
-        if (!block) return;
-        var shown = (parseInt(block.getAttribute("data-shown"), 10) || STEP) + STEP;
-        block.setAttribute("data-shown", String(shown));
-        apply();
-      });
+      input.addEventListener("change", function () { apply(true); });
     });
 
     /* Apply button (mainly for mobile, also re-applies) */
     var applyBtn = library.querySelector(".aih-apply");
     if (applyBtn) applyBtn.addEventListener("click", function (e) {
       e.preventDefault();
-      resetShownAndApply();
+      apply(true);
       var results = library.querySelector(".aih-results");
       if (results && window.innerWidth <= 768) {
         results.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
@@ -257,10 +236,10 @@
       if (allBox) allBox.checked = true;
       var search = library.querySelector(".aih-supplier-search");
       if (search) { search.value = ""; search.dispatchEvent(new Event("input")); }
-      resetShownAndApply();
+      apply(true);
     });
 
-    apply(); /* initial paint */
+    apply(false); /* initial paint */
   }
 
   /* ----------------------------------------------------------------

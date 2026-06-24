@@ -349,10 +349,9 @@ def media_block(supplier_slug, title, url, indent="          "):
 def card(supplier_slug, title, inds, url, kind, idx):
     ind_attr = " ".join(inds)
     primary_ind = IND[inds[0]]
-    hidden = " is-hidden" if idx >= 3 else ""
     kind_word = "Read the story" if kind == 'case-study' else "Read the article"
     return (
-        '      <article class="aih-card%s" data-supplier="%s" data-industry="%s" data-type="%s">\n'
+        '      <article class="aih-card" data-supplier="%s" data-industry="%s" data-type="%s">\n'
         '        <div class="aih-card-media">\n'
         '%s'
         '        </div>\n'
@@ -366,7 +365,7 @@ def card(supplier_slug, title, inds, url, kind, idx):
         '          </div>\n'
         '        </div>\n'
         '      </article>\n'
-    ) % (hidden, supplier_slug, ind_attr, kind,
+    ) % (supplier_slug, ind_attr, kind,
          media_block(supplier_slug, title, url),
          esc(primary_ind), esc(title),
          esc(SUP_LABEL[supplier_slug]), esc(excerpt(supplier_slug, kind)),
@@ -575,25 +574,21 @@ def module_04():
 
           <div class="aih-results-empty">No results match those filters. Try clearing a filter or two.</div>
 
-          <div class="aih-content-block" data-block="success" data-shown="3">
-            <div class="aih-shead">
-              <h2>Customer success stories</h2>
+          <div class="aih-results-scroll">
+            <div class="aih-content-block" data-block="success">
+              <div class="aih-shead">
+                <h2>Customer success stories</h2>
+              </div>
+              <div class="aih-card-grid">
+%s              </div>
             </div>
-            <div class="aih-card-grid">
-%s            </div>
-            <div class="aih-loadmore-wrap">
-              <button class="aih-btn aih-btn-secondary aih-loadmore" type="button">Load more stories</button>
-            </div>
-          </div>
 
-          <div class="aih-content-block" data-block="featured" data-shown="3">
-            <div class="aih-shead">
-              <h2>Featured articles</h2>
-            </div>
-            <div class="aih-card-grid">
-%s            </div>
-            <div class="aih-loadmore-wrap">
-              <button class="aih-btn aih-btn-secondary aih-loadmore" type="button">Load more articles</button>
+            <div class="aih-content-block" data-block="featured">
+              <div class="aih-shead">
+                <h2>Featured articles</h2>
+              </div>
+              <div class="aih-card-grid">
+%s              </div>
             </div>
           </div>
 

@@ -448,6 +448,20 @@
 }
 .aih-results-empty.is-visible { display: block; }
 
+/* fixed-height results pane: cards scroll internally instead of growing the page */
+.aih-results-scroll {
+  max-height: 860px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+  margin-right: -0.25rem;
+}
+.aih-results-scroll::-webkit-scrollbar { width: 10px; }
+.aih-results-scroll::-webkit-scrollbar-track { background: var(--aih-grey-100); border-radius: 5px; }
+.aih-results-scroll::-webkit-scrollbar-thumb { background: var(--aih-grey-400); border-radius: 5px; }
+.aih-results-scroll::-webkit-scrollbar-thumb:hover { background: var(--aih-grey-500); }
+.aih-results-scroll { scrollbar-width: thin; scrollbar-color: var(--aih-grey-400) var(--aih-grey-100); }
+
 .aih-content-block { margin-bottom: 2.75rem; }
 .aih-content-block:last-child { margin-bottom: 0; }
 
