@@ -387,11 +387,8 @@ def module_01():
     <span class="aih-hero-dots aih-hero-dots-tl" aria-hidden="true"></span>
     <span class="aih-hero-dots aih-hero-dots-bl" aria-hidden="true"></span>
     <div class="aih-hero-watermark" aria-hidden="true">
-      <svg viewBox="0 0 64 64" width="560" height="560">
-        <circle cx="34" cy="32" r="30" fill="#ffffff" opacity="0.05"></circle>
-        <path d="M32 8 L58 57 L45 57 L32 33 L19 57 L6 57 Z" fill="#ffffff" opacity="0.07"></path>
-      </svg>
-    </div>
+      <img class="aih-hero-watermark-img" src="%s" alt="" loading="eager">
+    </div>""" % esc(LOGO_URL) + """
     <div class="aih-container aih-hero-grid">
       <div class="aih-hero-content">
         <h1 id="aih-hero-title" style="color:#ffffff;">Knowledge &amp; Solutions <span class="aih-hero-accent">Center</span></h1>

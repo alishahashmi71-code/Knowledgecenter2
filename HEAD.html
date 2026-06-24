@@ -223,10 +223,13 @@
 
 /* large translucent Applied "A" watermark on the right */
 .aih-hero-watermark {
-  position: absolute; top: 50%; right: -30px; transform: translateY(-50%);
+  position: absolute; top: 50%; right: -50px; transform: translateY(-50%);
   z-index: 1; pointer-events: none; line-height: 0;
 }
-.aih-hero-watermark svg { display: block; width: 560px; height: 560px; max-width: 48vw; height: auto; }
+.aih-hero-watermark-img {
+  display: block; width: 620px; max-width: 52vw; height: auto;
+  opacity: 0.10;
+}
 
 /* teal "Center" accent word + underline rule */
 .aih-hero-accent { color: var(--aih-primary); display: block; }
