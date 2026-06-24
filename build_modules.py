@@ -14,8 +14,14 @@ import html, os, csv
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 
+def _nurl(u):
+    """Normalize a URL for matching: drop query string and trailing slash."""
+    if not u:
+        return ''
+    return str(u).split('?')[0].strip().rstrip('/').lower()
+
 def load_images():
-    """url -> hosted image url, from article-images.csv if present."""
+    """normalized url -> hosted image url, from article-images.csv if present."""
     path = os.path.join(OUT, 'article-images.csv')
     images = {}
     if os.path.exists(path):
@@ -24,7 +30,7 @@ def load_images():
                 u = (row.get('Article URL') or '').strip()
                 img = (row.get('Image URL') or '').strip()
                 if u and img:
-                    images[u] = img
+                    images[_nurl(u)] = img
     return images
 
 IMAGES = load_images()
@@ -272,27 +278,51 @@ FEATURED = [
      isl('lubrication'), 'https://www.tricocorp.com/lubricology/doing-more-with-less'),
 ]
 
-# ----- videos (supplier, title, youtube_id_or_None, url) -----------------
+# ----- articles removed (not present in the current content sheet) -------
+EXCLUDED_URLS = {_nurl(u) for u in [
+    'https://dodgeindustrial.com/dodge-industrial-receives-distinguished-industry-partner-of-the-year-award/',
+    'https://dodgeindustrial.com/dodge-industrial-named-large-manufacturer-of-the-year/',
+    'https://www.donaldson.com/en/resources/news/donaldson-official-partner-2026-special-olympics/',
+    'https://www.donaldson.com/en/resources/news/donaldson-acquires-facet-fuel-fluid-filtration/',
+    'https://www.donaldson.com/en/resources/news/donaldson-rings-nyse-closing-bell/',
+    'https://www.graco.com/us/en/about-graco/news/articles/2026/q2/new-dayton-headquarters-groundbreaking-ceremony.html',
+    'https://www.graco.com/us/en/about-graco/news/articles/2026/q1/100-years-graco-what-else-happened-in-1926.html',
+    'https://investors.graco.com/news-releases/news-release-details/graco-foundation-marks-companys-centennial-1-million-commitment',
+    'https://investors.graco.com/news-releases/news-release-details/graco-inc-enters-definitive-agreement-acquire-valco-melton',
+    'https://investors.graco.com/news-releases/news-release-details/acquisitions-drive-sales-growth',
+    'https://investors.graco.com/news-releases/news-release-details/graco-introduces-industrys-first-wirelessly-connected-and',
+    'https://investors.graco.com/news-releases/news-release-details/graco-finishes-year-record-quarterly-and-annual-sales',
+]}
+SUCCESS  = [e for e in SUCCESS  if _nurl(e[3]) not in EXCLUDED_URLS]
+FEATURED = [e for e in FEATURED if _nurl(e[3]) not in EXCLUDED_URLS]
+
+# ----- videos / podcasts (tag, title, youtube_id_or_None, url) -----------
 VIDEOS = [
-    ('pip', "Industry expert series: introduction to construction", "Yfy_CjNBGJ0",
+    ('PIP', "Industry expert series: introduction to construction", "Yfy_CjNBGJ0",
      'https://www.youtube.com/watch?v=Yfy_CjNBGJ0'),
-    ('pip', "Industry expert series: introduction to manufacturing", "XhEaSLVPU8U",
+    ('PIP', "Industry expert series: introduction to manufacturing", "XhEaSLVPU8U",
      'https://www.youtube.com/watch?v=XhEaSLVPU8U'),
-    ('pip', "Doffing contaminated gloves: how-to", "XJJZH5we4jQ",
+    ('PIP', "Doffing contaminated gloves: how-to", "XJJZH5we4jQ",
      'https://www.youtube.com/watch?v=XJJZH5we4jQ'),
-    ('pip', "Cut resistance guide", "21f31WX_bq0",
+    ('PIP', "Cut resistance guide", "21f31WX_bq0",
      'https://www.youtube.com/watch?v=21f31WX_bq0'),
-    ('pip', "Comparing safety helmets: tech talk", "omHVV056ZJU",
+    ('PIP', "Comparing safety helmets: tech talk", "omHVV056ZJU",
      'https://www.youtube.com/watch?v=omHVV056ZJU'),
-    ('milwaukee', "Right-sizing power tool accessories with The Concord Carpenter", "-F3jD3Wi7o8",
+    ('Milwaukee Tool', "Right-sizing power tool accessories with The Concord Carpenter", "-F3jD3Wi7o8",
      'https://www.youtube.com/watch?v=-F3jD3Wi7o8'),
-    ('milwaukee', "Rethinking workflows with Odell Complete Concrete", None,
+    ('Milwaukee Tool', "Rethinking workflows with Odell Complete Concrete", None,
      'https://www.youtube.com/@MilwaukeeTool/videos'),
+    ('Podcast', "The importance of effective dust control", None,
+     'https://www.tiktok.com/@appliedindustrial/video/7620802057703787807'),
+    ('Podcast', "How proper sizing reduces downtime and protects your operation", None,
+     'https://www.tiktok.com/@appliedindustrial/video/7631962509473271070'),
+    ('Podcast', "The deeper problems associated with spillage", None,
+     'https://www.tiktok.com/@appliedindustrial/video/7652342568453229855'),
 ]
 
 LOGO_URL = ("https://6847819.fs1.hubspotusercontent-na1.net/hubfs/6847819/"
             "Applied%20Logo/applied-industrial-technologies-squarelogo.png?width=860&t=1592397174461")
-CONTACT_URL = "https://www.applied.com/contact-us"   # FLAG: verify exact Applied contact URL
+CONTACT_URL = "https://www.applied.com/contact"   # Applied contact page
 RESOURCES_URL = "https://www.applied.com/"            # FLAG: placeholder destination for pending resources
 
 def esc(s):
@@ -309,7 +339,7 @@ def excerpt(supplier_slug, kind):
 
 def media_block(supplier_slug, title, url, indent="          "):
     """Render a real <img> if mapped, else the grey placeholder."""
-    img = IMAGES.get(url)
+    img = IMAGES.get(_nurl(url))
     if img:
         return ('%s<img src="%s" alt="%s" loading="lazy" width="640" height="400">\n'
                 % (indent, esc(img), esc(title)))
@@ -355,24 +385,30 @@ def module_01():
     return """<!-- module-01-hero.html | HubSpot: Rich Text / Custom HTML module -->
 <div class="aih-lp">
   <section class="aih-hero" aria-labelledby="aih-hero-title">
+    <span class="aih-hero-dots aih-hero-dots-tl" aria-hidden="true"></span>
+    <span class="aih-hero-dots aih-hero-dots-bl" aria-hidden="true"></span>
+    <div class="aih-hero-watermark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="560" height="560">
+        <circle cx="34" cy="32" r="30" fill="#ffffff" opacity="0.05"></circle>
+        <path d="M32 8 L58 57 L45 57 L32 33 L19 57 L6 57 Z" fill="#ffffff" opacity="0.07"></path>
+      </svg>
+    </div>
     <div class="aih-container aih-hero-grid">
       <div class="aih-hero-content">
-        <h1 id="aih-hero-title" style="color:#ffffff;">Knowledge &amp; Solutions Center</h1>
+        <h1 id="aih-hero-title" style="color:#ffffff;">Knowledge &amp; Solutions <span class="aih-hero-accent">Center</span></h1>
+        <span class="aih-hero-rule" aria-hidden="true"></span>
         <p class="aih-hero-sub">Insights, guides, and expert solutions from Applied&reg; and the
           suppliers we trust, gathered to help your operations run safer, smarter, and more
           efficiently.</p>
         <div class="aih-hero-actions">
-          <a class="aih-btn aih-btn-white" href="#aih-library" data-aih-scroll>Browse the knowledge library</a>
-          <a class="aih-btn aih-btn-ghost" href="%s" rel="noopener" target="_blank">Talk to an Applied specialist</a>
+          <a class="aih-btn aih-btn-primary" href="#aih-library" data-aih-scroll>Browse the Knowledge Library</a>
+          <a class="aih-btn aih-btn-white" href="%s" rel="noopener" target="_blank">Talk to an Applied Specialist</a>
         </div>
-      </div>
-      <div class="aih-hero-logo">
-        <img class="aih-hero-logo-img" src="%s" alt="Applied Industrial Technologies" loading="eager" width="180" height="180">
       </div>
     </div>
   </section>
 </div>
-""" % (CONTACT_URL, esc(LOGO_URL))
+""" % CONTACT_URL
 
 # =========================================================================
 # MODULE 02 — FEATURED SUPPLIERS STRIP
@@ -416,7 +452,7 @@ def module_03():
     dots = ""
     for i, (sup, title, blurb, url, tag) in enumerate(SPOTLIGHT):
         active = " is-active" if i == 0 else ""
-        spot_img = IMAGES.get(url)
+        spot_img = IMAGES.get(_nurl(url))
         if spot_img:
             spot_media = ('            <img src="%s" alt="%s" loading="lazy">\n'
                           % (esc(spot_img), esc(title)))
@@ -574,25 +610,26 @@ def module_04():
 # =========================================================================
 def module_05():
     cards = ""
-    for sup, title, ytid, url in VIDEOS:
+    for tag, title, ytid, url in VIDEOS:
         if ytid:
             thumb = "https://img.youtube.com/vi/%s/hqdefault.jpg" % ytid
             facade = (
                 '        <button class="aih-video-facade" type="button" data-yt="%s" '
                 'data-yt-title="%s" aria-label="Play video: %s">\n'
-                '          <img src="%s" alt="%s video thumbnail" loading="lazy" width="480" height="360">\n'
+                '          <img src="%s" alt="%s thumbnail" loading="lazy" width="480" height="360">\n'
                 '          <span class="aih-video-play">%s</span>\n'
                 '        </button>\n'
-            ) % (ytid, esc(title), esc(title), thumb, esc(SUP_LABEL[sup]), PLAY)
+            ) % (ytid, esc(title), esc(title), thumb, esc(tag), PLAY)
         else:
-            # no embeddable id (channel link) -> link out instead of embed
+            # no embeddable id (channel link / TikTok podcast) -> link out
+            verb = "Listen to podcast" if tag == "Podcast" else "Watch on YouTube"
             facade = (
                 '        <a class="aih-video-facade" href="%s" rel="noopener" target="_blank" '
-                'aria-label="Watch on YouTube: %s">\n'
-                '          <div class="aih-ph" role="img" aria-label="%s video thumbnail, pending"></div>\n'
+                'aria-label="%s: %s">\n'
+                '          <div class="aih-ph" role="img" aria-label="%s thumbnail, pending"></div>\n'
                 '          <span class="aih-video-play">%s</span>\n'
                 '        </a>\n'
-            ) % (esc(url), esc(title), esc(SUP_LABEL[sup]), PLAY)
+            ) % (esc(url), verb, esc(title), esc(tag), PLAY)
         cards += (
             '      <div class="aih-video-card">\n'
             '%s'
@@ -601,7 +638,7 @@ def module_05():
             '          <h3>%s</h3>\n'
             '        </div>\n'
             '      </div>\n'
-        ) % (facade, esc(SUP_LABEL[sup]), esc(title))
+        ) % (facade, esc(tag), esc(title))
     return """<!-- module-05-videos.html | HubSpot: Rich Text / Custom HTML module
      NOTE: contains click-to-load YouTube iframes injected by FOOTER JS.
      If your HubSpot Rich Text strips data- attributes, paste as a CUSTOM HTML module. -->
@@ -638,31 +675,33 @@ GUIDE_ICON = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
               '<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>')
 
 def module_06():
+    # (icon, tag, title, desc, cta, href, pending)
     res = [
-        (PDF_ICON, "PDF guide", "Industrial hose selection guide",
-         "A comprehensive guide to choosing the right hose for your application.",
-         "Download PDF"),
+        (GUIDE_ICON, "Catalog", "Request a catalog",
+         "Browse the full Applied product line and request your copy of the catalog.",
+         "Request a catalog", "https://www.applied.com/catalog", False),
         (VIDEO_ICON, "Video", "Bearing installation best practices",
          "Step-by-step best practices to ensure longer bearing life.",
-         "Watch video"),
+         "Watch video", RESOURCES_URL, True),
         (CHECK_ICON, "Checklist", "Preventive maintenance checklist",
          "Use this checklist to keep your equipment running at peak performance.",
-         "View checklist"),
+         "View checklist", RESOURCES_URL, True),
         (GUIDE_ICON, "Guide", "Pneumatics buyer's guide",
          "Key considerations when selecting pneumatic systems and components.",
-         "View guide"),
+         "View guide", RESOURCES_URL, True),
     ]
     cards = ""
-    for icon, tag, title, desc, cta in res:
+    for icon, tag, title, desc, cta, href, pending in res:
+        cls = "aih-res-card aih-pending" if pending else "aih-res-card"
         cards += (
-            '        <article class="aih-res-card aih-pending">\n'
+            '        <article class="%s">\n'
             '          <div class="aih-res-icon">%s</div>\n'
             '          <span class="aih-tag">%s</span>\n'
             '          <h3>%s</h3>\n'
             '          <p>%s</p>\n'
             '          <div><a class="aih-btn aih-btn-secondary aih-btn-sm" href="%s" rel="noopener" target="_blank">%s</a></div>\n'
             '        </article>\n'
-        ) % (icon, esc(tag), esc(title), esc(desc), RESOURCES_URL, esc(cta))
+        ) % (cls, icon, esc(tag), esc(title), esc(desc), esc(href), esc(cta))
     return """<!-- module-06-resources.html | HubSpot: Rich Text / Custom HTML module
      PENDING: real PDF/checklist/guide assets and URLs not supplied. Cards link to a
      placeholder Applied URL and are marked .aih-pending. Replace href + copy when ready. -->

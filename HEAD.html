@@ -204,18 +204,36 @@
    =================================================================== */
 .aih-hero {
   position: relative;
-  background: linear-gradient(120deg, #2a2566 0%, #201c52 45%, #060512 100%) !important;  /* logo blue deepening into near-black */
+  background: linear-gradient(120deg, #2a2566 0%, #201c52 55%, #15123a 100%) !important;  /* logo navy, even tone */
   color: #fff;
   padding: 5.5rem 0 5rem;
   overflow: hidden;
 }
-.aih-hero::after {            /* subtle depth wash, keeps logo area clean */
-  content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 10% 95%, rgba(0,123,133,0.16), transparent 48%);
-  pointer-events: none;
-}
 .aih-hero .aih-container { position: relative; z-index: 2; }
+
+/* decorative dot grids (corners) */
+.aih-hero-dots {
+  position: absolute; z-index: 1; pointer-events: none;
+  width: 132px; height: 132px; opacity: 0.55;
+  background-image: radial-gradient(rgba(255,255,255,0.35) 2px, transparent 2.2px);
+  background-size: 16px 16px;
+}
+.aih-hero-dots-tl { top: 26px; left: 26px; }
+.aih-hero-dots-bl { bottom: 26px; left: 26px; }
+
+/* large translucent Applied "A" watermark on the right */
+.aih-hero-watermark {
+  position: absolute; top: 50%; right: -30px; transform: translateY(-50%);
+  z-index: 1; pointer-events: none; line-height: 0;
+}
+.aih-hero-watermark svg { display: block; width: 560px; height: 560px; max-width: 48vw; height: auto; }
+
+/* teal "Center" accent word + underline rule */
+.aih-hero-accent { color: var(--aih-primary); display: block; }
+.aih-hero-rule {
+  display: block; width: 64px; height: 4px; border-radius: 2px;
+  background: var(--aih-primary); margin: 1.4rem 0 0;
+}
 .aih-hero-grid {
   display: flex; align-items: center; justify-content: space-between; gap: 2.5rem;
 }
@@ -601,9 +619,8 @@ body.aih-animations-ready .aih-reveal.is-in {
   .aih-section { padding: 3rem 0; }
   .aih-hero { padding: 4rem 0 3.5rem; }
   .aih-hero-grid { flex-direction: column; align-items: flex-start; gap: 1.75rem; }
-  .aih-hero-logo { order: -1; }
-  .aih-hero-logo-name { font-size: 1.7rem; }
-  .aih-hero-logo-img { width: 120px; }
+  .aih-hero-watermark { display: none; }
+  .aih-hero-dots { width: 96px; height: 96px; opacity: 0.4; }
 
   /* sidebar moves above results, becomes a collapsible panel */
   .aih-library-grid { grid-template-columns: 1fr; }
